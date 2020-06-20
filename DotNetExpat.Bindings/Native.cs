@@ -27,7 +27,7 @@ namespace Expat
         public static extern ExpatStatus Expat_Parse(IntPtr hParser, IntPtr hData, int count, bool end);
 
         [DllImport(LibraryName)]
-        public static extern StringBuilder Expat_GetErrorDescription(ExpatError error);
+        public static extern string Expat_GetErrorDescription(ExpatError error);
 
         [DllImport(LibraryName)]
         public static extern ExpatError Expat_GetErrorCode(IntPtr hParser);
