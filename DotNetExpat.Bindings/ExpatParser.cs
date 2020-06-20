@@ -44,6 +44,12 @@ namespace Expat
             }
         }
 
+        public ExpatError GetLastErrror()
+        {
+            ThrowIfDiposed();
+            return Native.Expat_GetErrorCode(parser);
+        }
+
         ~ExpatParser()
         {
             GC.SuppressFinalize(this);
