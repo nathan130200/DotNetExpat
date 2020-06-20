@@ -112,6 +112,9 @@ namespace Expat
 
             disposed = true;
 
+            if (userData.AddrOfPinnedObject() != IntPtr.Zero)
+                userData.Free();
+
             if (parser != IntPtr.Zero)
             {
                 Native.Expat_Release(parser);
