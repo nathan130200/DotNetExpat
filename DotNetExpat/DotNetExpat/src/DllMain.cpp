@@ -30,16 +30,16 @@ XML_Size Expat_GetCurrentLineNumber(XML_Parser parser) {
 
 XML_Index Expat_GetCurrentByteIndex(XML_Parser parser) {
     return XML_GetCurrentByteIndex(parser);
-}
+};
 
 XML_Index Expat_GetCurrentByteCount(XML_Parser parser) {
     return XML_GetCurrentByteCount(parser);
-}
+};
 
 void Expat_SetUserData(XML_Parser parser, void* data) {
     XML_SetUserData(parser, data);
-}
+};
 
 void Expat_SetElementHandler(XML_Parser parser, XML_StartElementHandler start, XML_EndElementHandler end) {
     XML_SetElementHandler(parser, start, end);
-}
+};
