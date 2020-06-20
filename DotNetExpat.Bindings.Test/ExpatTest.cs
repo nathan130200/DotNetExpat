@@ -1,9 +1,5 @@
 using System;
-using System.Diagnostics;
-using System.Net;
-using System.Security.Cryptography;
 using System.Text;
-using Expat;
 using NUnit.Framework;
 
 namespace Expat.Test
@@ -101,12 +97,47 @@ namespace Expat.Test
             var buffer = Encoding.UTF8.GetBytes(xml);
             newParser.Parse(buffer, buffer.Length);
 
+            Assert.AreNotEqual(IntPtr.Zero, newParser.GetPointer());
+            Assert.IsFalse(newParser.IsDisposed);
             Console.WriteLine("Pointer Before Dispose: " + newParser.GetPointer());
             newParser.Dispose();
 
-            Console.WriteLine("Pointer After Dispose: " + newParser.GetPointer());
-            Assert.IsFalse(parser.IsDisposed);
-            newParser.Parse(buffer, buffer.Length); // This MUST thrown exception.
+            try
+            {
+                Assert.AreEqual(IntPtr.Zero, newParser.GetPointer());
+                Assert.IsTrue(newParser.IsDisposed);
+                Console.WriteLine("Pointer After Dispose: " + newParser.GetPointer());
+
+                newParser.Parse(buffer, buffer.Length); // This MUST thrown exception.
+            }
+            catch(Exception ex)
+            {
+                Assert.IsTrue(ex is ObjectDisposedException, $"Unknownu nhandled eception.\n{ex}");
+            }
+        }
+
+        [Test]
+        [TestCase("utf-8")]
+        [TestCase("ascii")]
+        public void ParserXmlThenResetParser(string encoding)
+        {
+            var xml = "<foo>";
+            var buffer = Encoding.UTF8.GetBytes(xml);
+
+            var objParser = new ExpatParser(encoding);
+            objParser.Parse(buffer, buffer.Length, true);
+            Assert.IsTrue(objParser.Reset());
+
+            Console.WriteLine($"Byte Index: {parser.ByteIndex}");
+            Console.WriteLine($"Byte Index: {parser.ByteCount}");
+
+            Console.WriteLine("Lets reset the parser!");
+            objParser.Parse(buffer, buffer.Length, true);
+
+            Console.WriteLine($"Byte Index: {parser.ByteIndex}");
+            Console.WriteLine($"Byte Index: {parser.ByteCount}");
+
+            objParser.Dispose();
         }
     }
 }
