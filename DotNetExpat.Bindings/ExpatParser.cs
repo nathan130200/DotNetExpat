@@ -11,6 +11,8 @@ namespace Expat
         protected IntPtr parser;
         protected GCHandle userData;
 
+        public bool IsDisposed => disposed;
+
         public ExpatParser(string encoding_ = default)
         {
             encoding = encoding_;
@@ -71,6 +73,9 @@ namespace Expat
             }
         }
 
+        public IntPtr GetPointer()
+            => parser;
+
         public bool Reset()
         {
             ThrowIfDiposed();
@@ -103,13 +108,15 @@ namespace Expat
 
         public void Dispose()
         {
-            if (disposed)
-                throw new ObjectDisposedException("Parser already disposed.");
+            ThrowIfDiposed();
 
             disposed = true;
 
             if (parser != IntPtr.Zero)
+            {
                 Native.Expat_Release(parser);
+                parser = IntPtr.Zero;
+            }
         }
     }
 }

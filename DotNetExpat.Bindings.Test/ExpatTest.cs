@@ -21,12 +21,12 @@ namespace Expat.Test
 
         void OnStartElement(IntPtr _, string name, string[] attrs)
         {
-            Debug.WriteLine($"[OnStartElement] name={name};attrs={string.Join(",", attrs)}");
+            Console.WriteLine($"[OnStartElement] name={name};attrs={string.Join(",", attrs)}");
         }
 
         void OnEndElement(IntPtr _, string name)
         {
-            Debug.WriteLine($"[OnEndElement] name={name}");
+            Console.WriteLine($"[OnEndElement] name={name}");
         }
 
         [Test]
@@ -47,7 +47,7 @@ namespace Expat.Test
             var xml = "<foo><bar/></foo>";
             var buffer = Encoding.UTF8.GetBytes(xml);
             var status = parser.Parse(buffer, buffer.Length, true);
-            Debug.WriteLine("Bytes [Index/Count]: " + parser.ByteIndex + "/" + parser.ByteCount);
+            Console.WriteLine("Bytes [Index/Count]: " + parser.ByteIndex + "/" + parser.ByteCount);
             Assert.AreEqual(status, ExpatStatus.Ok);
         }
 
@@ -61,12 +61,11 @@ namespace Expat.Test
             if(status != ExpatStatus.Ok)
             {
                 var error = parser.GetLastErrror();
-                var description = Utilities.GetErrorDescription(error);
-                Debug.WriteLine("Error: " + error);
-                Debug.WriteLine("Description: " + description);
+                Console.WriteLine("Error: " + error);
+                Console.WriteLine("Description: " + error.GetDescription());
             }
 
-            Debug.WriteLine("Bytes [Index/Count]: " + parser.ByteIndex + "/" + parser.ByteCount);
+            Console.WriteLine("Bytes [Index/Count]: " + parser.ByteIndex + "/" + parser.ByteCount);
         }
 
         [Test]
@@ -79,19 +78,35 @@ namespace Expat.Test
             if (status != ExpatStatus.Ok)
             {
                 var error = parser.GetLastErrror();
-                var description = Utilities.GetErrorDescription(error);
-                Debug.WriteLine("Error: " + error);
-                Debug.WriteLine("Description: " + description);
+                Console.WriteLine("Error: " + error);
+                Console.WriteLine("Description: " + error.GetDescription());
             }
 
-            Debug.WriteLine("Bytes [Index/Count]: " + parser.ByteIndex + "/" + parser.ByteCount);
+            Console.WriteLine("Bytes [Index/Count]: " + parser.ByteIndex + "/" + parser.ByteCount);
         }
 
         [Test]
         public void DisplayByteIndexAndCount()
         {
-            Debug.WriteLine($"Byte Index: {parser.ByteIndex}");
-            Debug.WriteLine($"Byte Index: {parser.ByteCount}");
+            Console.WriteLine($"Byte Index: {parser.ByteIndex}");
+            Console.WriteLine($"Byte Index: {parser.ByteCount}");
+        }
+
+        [Test]
+        public void CheckIfDisposed()
+        {
+            var newParser = new ExpatParser("ascii");
+
+            var xml = "<foo xmlns='urn:bar' />";
+            var buffer = Encoding.UTF8.GetBytes(xml);
+            newParser.Parse(buffer, buffer.Length);
+
+            Console.WriteLine("Pointer Before Dispose: " + newParser.GetPointer());
+            newParser.Dispose();
+
+            Console.WriteLine("Pointer After Dispose: " + newParser.GetPointer());
+            Assert.IsFalse(parser.IsDisposed);
+            newParser.Parse(buffer, buffer.Length); // This MUST thrown exception.
         }
     }
 }
